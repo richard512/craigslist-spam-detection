@@ -1,3 +1,3 @@
 # craigslist-spam-detection
 
-a basic method for detecting spam in craigslist photos
+a userscript for detecting spam in craigslist photos
