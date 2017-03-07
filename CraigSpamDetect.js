@@ -125,7 +125,7 @@ function runocrad(imgindex, imgurl){
 		data: null,            
 		onload: function(response) {
 			//console.log('got response.responseText');
-			
+
 			var uInt8Array = new Uint8Array(this.response);
 			var i = uInt8Array.length;
 			var biStr = new Array(i);
@@ -138,10 +138,7 @@ function runocrad(imgindex, imgurl){
 			//console.log("3> "+ base64);
 
 			dataURL = "data:image/png;base64,"+base64
-			$("img:eq(0)").attr("src", dataURL);
-
-			dataURL = "data:image/png;base64,"+base64
-			$("img:eq(0)").attr("src", dataURL);
+			//$("img:eq(0)").attr("src", dataURL);
 
 			//console.log('making image');
 			var img = document.createElement('img');
@@ -173,12 +170,11 @@ $('.result-row').each(function(i){
 	if (i < 200) {
 		imgurl = $(this).find('img:eq(0)').attr('src')
 		console.log(imgurl)
-		if (imgurl.match('https://images.craigslist.org/.*_300x300.jpg')) {
-			imglist.push(imgurl)
-			runocrad(i, imgurl)
+		if (imgurl) {
+			if (imgurl.match('https://images.craigslist.org/.*_300x300.jpg')) {
+				imglist.push(imgurl)
+				runocrad(i, imgurl)
+			}
 		}
 	}
 })
-
-imgurl = $('img:eq(0)').attr('src')
-//runocrad(imgurl)
