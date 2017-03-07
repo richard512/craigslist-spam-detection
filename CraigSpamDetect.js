@@ -11,21 +11,13 @@
 // @require      https://github.com/antimatter15/ocrad.js/blob/master/ocrad.js?raw=true
 // ==/UserScript==
 
-function loadScript(url, callback)
-{
-	// Adding the script tag to the head as suggested before
+function loadScript(url, callback) {
 	var head = document.getElementsByTagName('head')[0];
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
 	script.src = url;
-
-
-	// Then bind the event to the callback function.
-	// There are several events for cross browser compatibility.
 	script.onreadystatechange = callback;
 	script.onload = callback;
-
-	// Fire the loading
 	head.appendChild(script);
 }
 
@@ -36,31 +28,21 @@ function runvibrant(){
 		responseType: 'arraybuffer',
 		data: null,            
 		onload: function(response) {
-			console.log('got response.responseText');
-			console.log("2> "+ this.response);
-			//  console.log("2b> "+ xhr.responseText);
-
 			var uInt8Array = new Uint8Array(this.response);
 			var i = uInt8Array.length;
 			var biStr = new Array(i);
 			while (i--)
 			{ biStr[i] = String.fromCharCode(uInt8Array[i]);
 			}
+			
 			var data = biStr.join('');
 			var base64 = window.btoa(data);
-
-			console.log("3> "+ base64);
-
 			dataURL = "data:image/png;base64,"+base64
 			$("img:eq(0)").attr("src", dataURL);
-
-			console.log('making image');
+			
 			var img = document.createElement('img');
 			img.crossOrigin = "Anonymous";
-
-
 			img.setAttribute('src', dataURL);
-
 			img.addEventListener('load', function() {
 				console.log('loaded image')
 				var vibrant = new Vibrant(img);
@@ -76,14 +58,6 @@ function runvibrant(){
 	});
 }
 
-function workercode(){
-	importScripts('ocrad.js')
-	console.log('loaded worker')
-	onmessage = function(e){
-		postMessage(OCRAD(e.data))
-	}
-}
-
 var lastWorker;
 var worker = new Worker(
 	window.URL.createObjectURL(
@@ -93,19 +67,12 @@ var worker = new Worker(
 	)
 );
 function runOCR(image_data, raw_feed){
-	//console.log('processing')
 	worker.onmessage = function(e){
-
-		//console.log('got message')
-
 		if('innerText' in document.getElementById("text")){
-			//document.getElementById("text").innerText = e.data
 			console.log('text = ' + e.data)
 		}else{
-			//document.getElementById("text").textContent = e.data
 			console.log('text = ' + e.data)
 		}
-		//document.getElementById('timing').innerHTML = 'recognition took ' + ((Date.now() - start)/1000).toFixed(2) + 's';
 		console.log('recognition took ' + ((Date.now() - start)/1000).toFixed(2) + 's')
 	}
 	var start = Date.now()
@@ -124,23 +91,16 @@ function runocrad(imgindex, imgurl){
 		responseType: 'arraybuffer',
 		data: null,            
 		onload: function(response) {
-			//console.log('got response.responseText');
-
 			var uInt8Array = new Uint8Array(this.response);
 			var i = uInt8Array.length;
 			var biStr = new Array(i);
 			while (i--)
-			{ biStr[i] = String.fromCharCode(uInt8Array[i]);
+			{
+				biStr[i] = String.fromCharCode(uInt8Array[i]);
 			}
 			var data = biStr.join('');
 			var base64 = window.btoa(data);
-
-			//console.log("3> "+ base64);
-
 			dataURL = "data:image/png;base64,"+base64
-			//$("img:eq(0)").attr("src", dataURL);
-
-			//console.log('making image');
 			var img = document.createElement('img');
 			img.crossOrigin = "Anonymous";
 
@@ -148,17 +108,10 @@ function runocrad(imgindex, imgurl){
 			img.setAttribute('src', dataURL);
 			var string = OCRAD(img);
 
-			//var myocr = new OCRAD()
-			//var worker = myocr.createWebWorkerFromString(workercode)
 			if (string.length > 3) {
-				//alert('SPAM')
 				$('.result-row:eq('+imgindex+')').css('background', 'red')
 				console.log('result '+(imgindex+1)+' looks like spam')
-			} else {
-				//alert('Not SPAM')
 			}
-			//console.log(string, imgurl)
-			//runOCR(uInt8Array, true)
 		}
 	});
 }
