@@ -7,6 +7,7 @@
 // @match        https://*.craigslist.org/search/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
+// @require      https://code.jquery.com/jquery-3.1.1.min.js
 // @require      https://github.com/antimatter15/ocrad.js/blob/master/ocrad.js?raw=true
 // ==/UserScript==
 
@@ -85,11 +86,11 @@ function workercode(){
 
 var lastWorker;
 var worker = new Worker(
-    window.URL.createObjectURL(
-        new Blob([
-            "importScripts('ocrad.js'); onmessage = function(e){postMessage(OCRAD(e.data))}"
-        ])
-    )
+	window.URL.createObjectURL(
+		new Blob([
+			"importScripts('ocrad.js'); onmessage = function(e){postMessage(OCRAD(e.data))}"
+		])
+	)
 );
 function runOCR(image_data, raw_feed){
 	console.log('processing')
@@ -116,7 +117,7 @@ function runOCR(image_data, raw_feed){
 	lastWorker = worker;
 }
 
-function runocrad(imgurl){
+function runocrad(imgindex, imgurl){
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: imgurl,
@@ -124,9 +125,7 @@ function runocrad(imgurl){
 		data: null,            
 		onload: function(response) {
 			console.log('got response.responseText');
-			console.log("2> "+ this.response);
-			//  console.log("2b> "+ xhr.responseText);
-
+			
 			var uInt8Array = new Uint8Array(this.response);
 			var i = uInt8Array.length;
 			var biStr = new Array(i);
@@ -136,7 +135,7 @@ function runocrad(imgurl){
 			var data = biStr.join('');
 			var base64 = window.btoa(data);
 
-			console.log("3> "+ base64);
+			//console.log("3> "+ base64);
 
 			dataURL = "data:image/png;base64,"+base64
 			$("img:eq(0)").attr("src", dataURL);
@@ -154,11 +153,32 @@ function runocrad(imgurl){
 
 			//var myocr = new OCRAD()
 			//var worker = myocr.createWebWorkerFromString(workercode)
-			alert(string);
+			if (string.length > 3) {
+				//alert('SPAM')
+				$('.result-row:eq('+imgindex+')').css('background', 'red')
+				console.log('result '+(imgindex+1)+' looks like spam')
+			} else {
+				//alert('Not SPAM')
+			}
+			//console.log(string, imgurl)
 			//runOCR(uInt8Array, true)
 		}
 	});
 }
 
 //loadScript('https://jariz.github.io/vibrant.js/dist/Vibrant.min.js', runvibrant)
-runocrad('https://images.craigslist.org/01313_jTmQUAripag_300x300.jpg')
+
+imglist = [];
+$('.result-row').each(function(i){
+	if (i < 2) {
+		imgurl = $(this).find('img:eq(0)').attr('src')
+		console.log(imgurl)
+		if (imgurl.match('https://images.craigslist.org/.*_300x300.jpg')) {
+			imglist.push(imgurl)
+			runocrad(i, imgurl)
+		}
+	}
+})
+
+imgurl = $('img:eq(0)').attr('src')
+//runocrad(imgurl)
