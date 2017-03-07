@@ -93,10 +93,10 @@ var worker = new Worker(
 	)
 );
 function runOCR(image_data, raw_feed){
-	console.log('processing')
+	//console.log('processing')
 	worker.onmessage = function(e){
 
-		console.log('got message')
+		//console.log('got message')
 
 		if('innerText' in document.getElementById("text")){
 			//document.getElementById("text").innerText = e.data
@@ -124,7 +124,7 @@ function runocrad(imgindex, imgurl){
 		responseType: 'arraybuffer',
 		data: null,            
 		onload: function(response) {
-			console.log('got response.responseText');
+			//console.log('got response.responseText');
 			
 			var uInt8Array = new Uint8Array(this.response);
 			var i = uInt8Array.length;
@@ -143,7 +143,7 @@ function runocrad(imgindex, imgurl){
 			dataURL = "data:image/png;base64,"+base64
 			$("img:eq(0)").attr("src", dataURL);
 
-			console.log('making image');
+			//console.log('making image');
 			var img = document.createElement('img');
 			img.crossOrigin = "Anonymous";
 
@@ -170,7 +170,7 @@ function runocrad(imgindex, imgurl){
 
 imglist = [];
 $('.result-row').each(function(i){
-	if (i < 2) {
+	if (i < 200) {
 		imgurl = $(this).find('img:eq(0)').attr('src')
 		console.log(imgurl)
 		if (imgurl.match('https://images.craigslist.org/.*_300x300.jpg')) {
