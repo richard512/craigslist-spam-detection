@@ -10,3 +10,9 @@ function hasRepeatedLetters(str) {
     return result;
 }
 ```
+And this too:
+```
+function hasNonAscii(str){
+    return str.split("").some(function(char) { return char.charCodeAt(0) > 127 });
+}
+```
